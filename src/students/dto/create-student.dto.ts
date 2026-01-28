@@ -3,7 +3,7 @@ import { IsEmail, IsNotEmpty, IsNumberString, IsOptional, IsString } from 'class
 export class CreateStudentDto {
     @IsNotEmpty()
     @IsNumberString()
-    numero_identificacion: number;
+    numero_identificacion: string;
     @IsNotEmpty()
     @IsString()
     tipo_identificacion: string;

@@ -1,48 +1,45 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateStudentDto } from './dto/create-student.dto';
 import { UpdateStudentDto } from './dto/update-student.dto';
-import { Student } from './entities/student.entity';
+import { PrismaService } from '../prisma/prisma.service';
 
 @Injectable()
 export class StudentsService {
-  private students: Student[] = [];
+  constructor(private prisma: PrismaService) { }
 
-  create(dto: CreateStudentDto): Student {
-    const newStudent: Student = {
-      numero_identificacion: dto.numero_identificacion.toString(),
-      tipo_identificacion: dto.tipo_identificacion,
-      nombres: dto.nombres,
-      apellidos: dto.apellidos,
-      email: dto.email,
-      celular: dto.celular || '',
-      ciudad: dto.ciudad || '',
-      estado: true,
-      fecha_registro: new Date(),
-    };
-    this.students.push(newStudent);
-    return newStudent;
+  async create(dto: CreateStudentDto) {
+    return await this.prisma.estudiante.create({
+      data: dto,
+    });
   }
 
-  findAll(): Student[] {
-    return this.students;
+  async findAll() {
+    return await this.prisma.estudiante.findMany();
   }
 
-  findOne(numero_identificacion: string): Student {
-    const found = this.students.find(s => s.numero_identificacion === numero_identificacion);
-    if (!found) throw new NotFoundException(`Estudiante ${numero_identificacion} no existe`);
-    return found;
-  }
-
-  update(numero_identificacion: string, dto: UpdateStudentDto): Student {
-    const student = this.findOne(numero_identificacion);
-    Object.assign(student, dto);
+  async findOne(numero_identificacion: string) {
+    const student = await this.prisma.estudiante.findUnique({
+      where: { numero_identificacion },
+    });
+    if (!student) throw new NotFoundException(`Estudiante ${numero_identificacion} no existe`);
     return student;
   }
 
-  remove(numero_identificacion: string): void {
-    const idx = this.students.findIndex(s => s.numero_identificacion === numero_identificacion);
-    if (idx === -1) throw new NotFoundException(`Estudiante ${numero_identificacion} no existe`);
-    this.students.splice(idx, 1);
+  async update(numero_identificacion: string, dto: UpdateStudentDto) {
+    // Verificar si existe antes de actualizar
+    await this.findOne(numero_identificacion);
+    return await this.prisma.estudiante.update({
+      where: { numero_identificacion },
+      data: dto,
+    });
+  }
+
+  async remove(numero_identificacion: string) {
+    // Verificar si existe antes de eliminar
+    await this.findOne(numero_identificacion);
+    return await this.prisma.estudiante.delete({
+      where: { numero_identificacion },
+    });
   }
 }
 
