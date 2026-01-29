@@ -25,4 +25,55 @@ model Estudiante {
   fecha_registro        DateTime @default(now())
 
   @@map("estudiantes")
+  postulaciones Postulacion[]
+}
+
+model Organizacion {
+  id_organizacion String   @id @default(uuid())
+  nit             String   @unique
+  nombre          String
+  sector          String?
+  descripcion     String?
+  logo_url        String?
+  ubicacion       String?
+  estado          String?
+  fecha_registro  DateTime @default(now())
+  ofertas         OfertaLaboral[]
+
+  @@map("organizaciones")
+}
+
+model OfertaLaboral {
+  id_oferta         Int      @id @default(autoincrement())
+  titulo            String
+  descripcion       String?
+  requisitos        String?
+  tipo_contrato     String?
+  ubicacion         String?
+  salario           Decimal?
+  fecha_publicacion DateTime @default(now())
+  fecha_cierre      DateTime?
+  estado            String?
+  
+  id_organizacion   String
+  organizacion      Organizacion @relation(fields: [id_organizacion], references: [id_organizacion])
+  
+  postulaciones     Postulacion[]
+
+  @@map("ofertas_laborales")
+}
+
+model Postulacion {
+  id_postulacion    Int      @id @default(autoincrement())
+  fecha_postulacion DateTime @default(now())
+  estado            String
+  
+  id_num            String
+  estudiante        Estudiante @relation(fields: [id_num], references: [numero_identificacion])
+  
+  id_oferta         Int
+  oferta            OfertaLaboral @relation(fields: [id_oferta], references: [id_oferta])
+
+  @@unique([id_num, id_oferta])
+  @@map("postulaciones")
 }
