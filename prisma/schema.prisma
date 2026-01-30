@@ -26,6 +26,7 @@ model Estudiante {
 
   @@map("estudiantes")
   postulaciones Postulacion[]
+  estudianteCarreras EstudianteCarrera[]
 }
 
 model Organizacion {
@@ -77,3 +78,49 @@ model Postulacion {
   @@unique([id_num, id_oferta])
   @@map("postulaciones")
 }
+
+model EstudianteCarrera {
+  numero_identificacion String
+  id_carrera            Int
+  estado                String   @db.VarChar(20)
+  semestre_actual       Int
+  fecha_inicio          DateTime
+  fecha_fin             DateTime?
+
+  // Clave primaria compuesta
+  @@id([numero_identificacion, id_carrera])
+
+  // Relaciones (ajústalas según tus modelos existentes)
+  estudiante Estudiante @relation(fields: [numero_identificacion], references: [numero_identificacion])
+  carrera    Carrera    @relation(fields: [id_carrera], references: [id_carrera])
+}
+
+model Carrera {
+  id_carrera     Int     @id @default(autoincrement())
+  nombre         String  @db.VarChar(100)
+  nivel          String  @db.VarChar(50)
+  id_universidad Int
+  estado         String  @db.VarChar(20)
+
+  // Relación con Universidad
+  universidad Universidad @relation(fields: [id_universidad], references: [id_universidad])
+
+  // Relación con EstudianteCarrera
+  estudiantesCarrera EstudianteCarrera[]
+
+  @@map("carrera")
+}
+
+model Universidad {
+  id_universidad Int     @id @default(autoincrement())
+  nombre         String  @db.VarChar(100)
+  ciudad         String  @db.VarChar(50)
+  pais           String  @db.VarChar(50)
+  estado         String  @db.VarChar(20)
+
+  // Relación con Carrera
+  carreras Carrera[]
+
+  @@map("universidad")
+}
+

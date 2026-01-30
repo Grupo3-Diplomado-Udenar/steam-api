@@ -2,6 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateStudentDto } from './dto/create-student.dto';
 import { UpdateStudentDto } from './dto/update-student.dto';
 import { PrismaService } from '../prisma/prisma.service';
+import { AssignCareerDto } from './dto/assign-career.dto';
 
 @Injectable()
 export class StudentsService {
@@ -41,5 +42,13 @@ export class StudentsService {
       where: { numero_identificacion },
     });
   }
-}
 
+  assignCareer(studentId: string, dto: AssignCareerDto) {
+    return this.prisma.estudianteCarrera.create({
+      data: {
+        numero_identificacion: studentId,
+        ...dto,
+      },
+    });
+  }
+}
