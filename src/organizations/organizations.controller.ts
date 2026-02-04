@@ -15,25 +15,25 @@ import { UpdateOrganizationDto } from './dto/update-organization.dto';
 export class OrganizationsController {
   constructor(private readonly organizationsService: OrganizationsService) {}
 
-  // 👉 Crear organización
+  //Crear organización
   @Post()
   create(@Body() createOrganizationDto: CreateOrganizationDto) {
     return this.organizationsService.create(createOrganizationDto);
   }
 
-  // 👉 Listar todas
+  //Listar todas
   @Get()
   findAll() {
     return this.organizationsService.findAll();
   }
 
-  // 👉 Obtener una por ID
+  //Obtener una por ID
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.organizationsService.findOne(id);
   }
 
-  // 👉 Actualizar
+  //Actualizar
   @Put(':id')
   update(
     @Param('id') id: string,
@@ -42,7 +42,7 @@ export class OrganizationsController {
     return this.organizationsService.update(id, updateOrganizationDto);
   }
 
-  // 👉 Eliminar (lógico)
+  //Eliminar (lógico)
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.organizationsService.remove(id);

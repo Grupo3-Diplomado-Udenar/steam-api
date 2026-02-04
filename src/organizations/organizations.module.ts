@@ -4,7 +4,7 @@ import { OrganizationsController } from './organizations.controller';
 import { PrismaModule } from '../prisma/prisma.module';
 
 @Module({
-  imports: [PrismaModule], // 👈 ESTO SOLUCIONA TODO
+  imports: [PrismaModule],
   controllers: [OrganizationsController],
   providers: [OrganizationsService],
 })
