@@ -19,6 +19,7 @@ model Estudiante {
   nombres               String
   apellidos             String
   email                 String   @unique
+  password              String
   celular               String?  
   ciudad                String?  
   estado                Boolean  @default(true)
@@ -33,6 +34,8 @@ model Organizacion {
   id_organizacion String   @id @default(uuid())
   nit             String   @unique
   nombre          String
+  email           String   @unique
+  password        String
   sector          String?
   descripcion     String?
   logo_url        String?
