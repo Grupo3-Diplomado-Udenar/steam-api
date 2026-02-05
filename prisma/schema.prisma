@@ -6,6 +6,7 @@
 
 // Para resetear la base de datos
 // npx prisma migrate reset
+// npx prisma db push
 
 generator client {
   provider = "prisma-client-js"
