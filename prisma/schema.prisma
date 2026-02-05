@@ -4,13 +4,17 @@
 // Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
+// Para resetear la base de datos
+// npx prisma migrate reset
+// npx prisma db push
+
 generator client {
-  provider = "prisma-client"
-  output   = "../generated/prisma"
+  provider = "prisma-client-js"
 }
 
 datasource db {
   provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
 
 model Estudiante {
@@ -19,10 +23,111 @@ model Estudiante {
   nombres               String
   apellidos             String
   email                 String   @unique
+  password              String
   celular               String?  
   ciudad                String?  
   estado                Boolean  @default(true)
   fecha_registro        DateTime @default(now())
 
   @@map("estudiantes")
+  postulaciones Postulacion[]
+  estudianteCarreras EstudianteCarrera[]
 }
+
+model Organizacion {
+  id_organizacion String   @id @default(uuid())
+  nit             String   @unique
+  nombre          String
+  email           String   @unique
+  password        String
+  sector          String?
+  descripcion     String?
+  logo_url        String?
+  ubicacion       String?
+  estado          String?
+  fecha_registro  DateTime @default(now())
+  ofertas         OfertaLaboral[]
+
+  @@map("organizaciones")
+}
+
+model OfertaLaboral {
+  id_oferta         Int      @id @default(autoincrement())
+  titulo            String
+  descripcion       String?
+  requisitos        String?
+  tipo_contrato     String?
+  ubicacion         String?
+  salario           Decimal?
+  fecha_publicacion DateTime @default(now())
+  fecha_cierre      DateTime?
+  estado            String?
+  
+  id_organizacion   String
+  organizacion      Organizacion @relation(fields: [id_organizacion], references: [id_organizacion])
+  
+  postulaciones     Postulacion[]
+
+  @@map("ofertas_laborales")
+}
+
+model Postulacion {
+  id_postulacion    Int      @id @default(autoincrement())
+  fecha_postulacion DateTime @default(now())
+  estado            String
+  
+  id_num            String
+  estudiante        Estudiante @relation(fields: [id_num], references: [numero_identificacion])
+  
+  id_oferta         Int
+  oferta            OfertaLaboral @relation(fields: [id_oferta], references: [id_oferta])
+
+  @@unique([id_num, id_oferta])
+  @@map("postulaciones")
+}
+
+model EstudianteCarrera {
+  numero_identificacion String
+  id_carrera            Int
+  estado                String   @db.VarChar(20)
+  semestre_actual       Int
+  fecha_inicio          DateTime
+  fecha_fin             DateTime?
+
+  // Clave primaria compuesta
+  @@id([numero_identificacion, id_carrera])
+
+  // Relaciones (ajústalas según tus modelos existentes)
+  estudiante Estudiante @relation(fields: [numero_identificacion], references: [numero_identificacion])
+  carrera    Carrera    @relation(fields: [id_carrera], references: [id_carrera])
+}
+
+model Carrera {
+  id_carrera     Int     @id @default(autoincrement())
+  nombre         String  @db.VarChar(100)
+  nivel          String  @db.VarChar(50)
+  id_universidad Int
+  estado         String  @db.VarChar(20)
+
+  // Relación con Universidad
+  universidad Universidad @relation(fields: [id_universidad], references: [id_universidad])
+
+  // Relación con EstudianteCarrera
+  estudiantesCarrera EstudianteCarrera[]
+
+  @@map("carrera")
+}
+
+model Universidad {
+  id_universidad Int     @id @default(autoincrement())
+  nombre         String  @db.VarChar(100)
+  ciudad         String  @db.VarChar(50)
+  pais           String  @db.VarChar(50)
+  estado         String  @db.VarChar(20)
+
+  // Relación con Carrera
+  carreras Carrera[]
+
+  @@map("universidad")
+}
+
