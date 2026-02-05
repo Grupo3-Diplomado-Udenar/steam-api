@@ -1,20 +1,20 @@
-import { IsString, IsOptional, IsEmail, IsNotEmpty, MinLength } from 'class-validator';
+import { IsEmail, IsNotEmpty, IsOptional, IsString, MinLength } from 'class-validator';
 
-export class CreateOrganizationDto {
-  @IsString()
+export class RegisterOrganizationDto {
   @IsNotEmpty()
+  @IsString()
   nit: string;
 
-  @IsString()
   @IsNotEmpty()
+  @IsString()
   nombre: string;
 
-  @IsEmail()
   @IsNotEmpty()
+  @IsEmail()
   email: string;
 
-  @IsString()
   @IsNotEmpty()
+  @IsString()
   @MinLength(6)
   password: string;
 

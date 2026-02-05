@@ -3,14 +3,26 @@ import { CreateStudentDto } from './dto/create-student.dto';
 import { UpdateStudentDto } from './dto/update-student.dto';
 import { PrismaService } from '../prisma/prisma.service';
 import { AssignCareerDto } from './dto/assign-career.dto';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class StudentsService {
   constructor(private prisma: PrismaService) { }
 
   async create(dto: CreateStudentDto) {
+    const hashedPassword = await bcrypt.hash(dto.password, 10);
+    
     return await this.prisma.estudiante.create({
-      data: dto,
+      data: {
+        numero_identificacion: dto.numero_identificacion,
+        tipo_identificacion: dto.tipo_identificacion,
+        nombres: dto.nombres,
+        apellidos: dto.apellidos,
+        email: dto.email,
+        password: hashedPassword,
+        celular: dto.celular,
+        ciudad: dto.ciudad,
+      },
     });
   }
 
