@@ -1,5 +1,6 @@
-import { IsInt, IsNotEmpty, IsString } from 'class-validator';
+import { IsInt, IsNotEmpty, IsString, IsEnum } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
+import { ApplicationStatus } from '../../common/enums';
 
 export class CreateApplicationDto {
     @ApiProperty({ example: '1234567890', description: 'Student Identification Number' })
@@ -12,8 +13,12 @@ export class CreateApplicationDto {
     @IsInt()
     id_oferta: number;
 
-    @ApiProperty({ example: 'PENDING', description: 'Application Status' })
+    @ApiProperty({
+        example: ApplicationStatus.PENDING,
+        description: 'Application Status',
+        enum: ApplicationStatus
+    })
     @IsNotEmpty()
-    @IsString()
-    estado: string;
+    @IsEnum(ApplicationStatus)
+    estado: ApplicationStatus;
 }
