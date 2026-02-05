@@ -11,7 +11,7 @@ export class StudentsService {
 
   async create(dto: CreateStudentDto) {
     const hashedPassword = await bcrypt.hash(dto.password, 10);
-    
+
     return await this.prisma.estudiante.create({
       data: {
         numero_identificacion: dto.numero_identificacion,
@@ -27,7 +27,9 @@ export class StudentsService {
   }
 
   async findAll() {
-    return await this.prisma.estudiante.findMany();
+    const students = await this.prisma.estudiante.findMany();
+    console.log(students);
+    return students
   }
 
   async findOne(numero_identificacion: string) {
