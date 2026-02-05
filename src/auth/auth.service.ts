@@ -5,13 +5,14 @@ import { PrismaService } from '../prisma/prisma.service';
 import { RegisterStudentDto } from './dto/register-student.dto';
 import { RegisterOrganizationDto } from './dto/register-organization.dto';
 import { LoginDto } from './dto/login.dto';
+import { EntityStatus } from '../common/enums';
 
 @Injectable()
 export class AuthService {
   constructor(
     private prisma: PrismaService,
     private jwtService: JwtService,
-  ) {}
+  ) { }
 
   async registerStudent(registerStudentDto: RegisterStudentDto) {
     const { email, password, ...studentData } = registerStudentDto;
@@ -38,12 +39,12 @@ export class AuthService {
     });
 
     // Generar token JWT
-    const payload = { 
-      sub: student.numero_identificacion, 
+    const payload = {
+      sub: student.numero_identificacion,
       email: student.email,
-      type: 'student' 
+      type: 'student'
     };
-    
+
     const access_token = await this.jwtService.signAsync(payload);
 
     return {
@@ -79,17 +80,17 @@ export class AuthService {
         ...organizationData,
         email,
         password: hashedPassword,
-        estado: 'ACTIVA',
+        estado: EntityStatus.ACTIVE,
       },
     });
 
     // Generar token JWT
-    const payload = { 
-      sub: organization.id_organizacion, 
+    const payload = {
+      sub: organization.id_organizacion,
       email: organization.email,
-      type: 'organization' 
+      type: 'organization'
     };
-    
+
     const access_token = await this.jwtService.signAsync(payload);
 
     return {
@@ -142,18 +143,18 @@ export class AuthService {
 
     // Verificar contraseña
     const isPasswordValid = await bcrypt.compare(password, userPassword);
-    
+
     if (!isPasswordValid) {
       throw new UnauthorizedException('Credenciales inválidas');
     }
 
     // Generar token JWT
-    const payload = { 
-      sub: userId, 
+    const payload = {
+      sub: userId,
       email: userEmail,
-      type: userType 
+      type: userType
     };
-    
+
     const access_token = await this.jwtService.signAsync(payload);
 
     return {

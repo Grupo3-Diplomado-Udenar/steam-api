@@ -1,4 +1,5 @@
 # compiled output
+.env
 /dist
 /node_modules
 /build
@@ -54,3 +55,4 @@ report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
 
 .env
 .env.develop
+.env

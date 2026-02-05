@@ -3,14 +3,15 @@ import { PrismaService } from '../prisma/prisma.service';
 import { CreateOrganizationDto } from './dto/create-organization.dto';
 import { UpdateOrganizationDto } from './dto/update-organization.dto';
 import * as bcrypt from 'bcrypt';
+import { EntityStatus } from '../common/enums';
 
 @Injectable()
 export class OrganizationsService {
-  constructor(private prisma: PrismaService) {}
+  constructor(private prisma: PrismaService) { }
 
   async create(dto: CreateOrganizationDto) {
     const hashedPassword = await bcrypt.hash(dto.password, 10);
-    
+
     return this.prisma.organizacion.create({
       data: {
         nit: dto.nit,
@@ -21,7 +22,7 @@ export class OrganizationsService {
         descripcion: dto.descripcion,
         logo_url: dto.logo_url,
         ubicacion: dto.ubicacion,
-        estado: 'ACTIVA',
+        estado: EntityStatus.ACTIVE,
       },
     });
   }
@@ -46,7 +47,7 @@ export class OrganizationsService {
   remove(id: string) {
     return this.prisma.organizacion.update({
       where: { id_organizacion: id },
-      data: { estado: 'INACTIVA' },
+      data: { estado: EntityStatus.INACTIVE },
     });
   }
 }
