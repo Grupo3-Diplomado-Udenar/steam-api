@@ -30,6 +30,13 @@ export class OffersService {
         return this.prisma.ofertaLaboral.findMany();
     }
 
+    async findByOrganization(organizationId: string): Promise<Offers[]> {
+        return this.prisma.ofertaLaboral.findMany({
+            where: { id_organizacion: organizationId },
+            orderBy: { fecha_publicacion: 'desc' },
+        });
+    }
+
     async findOne(id: number): Promise<Offers> {
         const offer = await this.prisma.ofertaLaboral.findUnique({
             where: { id_oferta: id },

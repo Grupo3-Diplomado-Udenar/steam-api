@@ -65,4 +65,18 @@ export class StudentsService {
       },
     });
   }
+
+  async getStudentCareers(studentId: string) {
+    await this.findOne(studentId);
+    return this.prisma.estudianteCarrera.findMany({
+      where: { numero_identificacion: studentId },
+      include: {
+        carrera: {
+          include: {
+            universidad: true,
+          },
+        },
+      },
+    });
+  }
 }

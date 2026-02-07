@@ -1,5 +1,6 @@
-import { IsEnum, IsInt, IsNotEmpty, IsDateString, Min } from 'class-validator';
-import { ApiProperty } from '@nestjs/swagger';
+import { IsEnum, IsInt, IsNotEmpty, IsDateString, Min, IsOptional } from 'class-validator';
+import { Transform, Type } from 'class-transformer';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { StudentCareerStatus } from '../../common/enums';
 
 export class AssignCareerDto {
@@ -19,8 +20,15 @@ export class AssignCareerDto {
   @Min(1)
   semestre_actual: number;
 
-  @ApiProperty({ example: '2024-01-15', description: 'Start date' })
+  @ApiProperty({ example: '2024-01-15', description: 'Start date (YYYY-MM-DD)' })
   @IsNotEmpty()
   @IsDateString()
-  fecha_inicio: Date;
+  @Transform(({ value }) => value ? new Date(value).toISOString() : value)
+  fecha_inicio: string;
+
+  @ApiPropertyOptional({ example: '2026-12-15', description: 'End date (YYYY-MM-DD)' })
+  @IsOptional()
+  @IsDateString()
+  @Transform(({ value }) => value ? new Date(value).toISOString() : value)
+  fecha_fin?: string;
 }

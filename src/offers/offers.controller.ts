@@ -24,6 +24,13 @@ export class OffersController {
         return this.offersService.findAll();
     }
 
+    @ApiOperation({ summary: 'Get all offers by organization' })
+    @ApiResponse({ status: 200, description: 'Return all offers for the organization.', type: [Offers] })
+    @Get('organization/:organizationId')
+    findByOrganization(@Param('organizationId') organizationId: string) {
+        return this.offersService.findByOrganization(organizationId);
+    }
+
     @ApiOperation({ summary: 'Get a job offer by ID' })
     @ApiResponse({ status: 200, description: 'Return the offer details.', type: Offers })
     @ApiResponse({ status: 404, description: 'Offer not found.' })

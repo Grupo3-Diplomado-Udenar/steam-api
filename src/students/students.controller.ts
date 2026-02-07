@@ -2,6 +2,7 @@ import { Body, Controller, Post, Get, Param, Patch, Delete, HttpCode } from '@ne
 import { StudentsService } from './students.service';
 import { CreateStudentDto } from './dto/create-student.dto';
 import { UpdateStudentDto } from './dto/update-student.dto';
+import { AssignCareerDto } from './dto/assign-career.dto';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 
 
@@ -50,6 +51,20 @@ export class StudentsController {
         this.studentsService.remove(id);
     }
 
+    @ApiOperation({ summary: 'Assign career to student' })
+    @ApiResponse({ status: 201, description: 'Career successfully assigned to student.' })
+    @Post(':id/careers')
+    assignCareer(
+        @Param('id') id: string,
+        @Body() dto: AssignCareerDto
+    ) {
+        return this.studentsService.assignCareer(id, dto);
+    }
 
-
+    @ApiOperation({ summary: 'Get all careers of a student' })
+    @ApiResponse({ status: 200, description: 'List of student careers.' })
+    @Get(':id/careers')
+    getStudentCareers(@Param('id') id: string) {
+        return this.studentsService.getStudentCareers(id);
+    }
 }
