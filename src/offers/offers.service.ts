@@ -2,46 +2,61 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateOffersDto } from './dto/create-offers.dto';
 import { UpdateOffersDto } from './dto/update-offers.dto';
 import { Offers } from './entities/offers.entity';
+import { PrismaService } from '../prisma/prisma.service';
+import { EntityStatus } from '../common/enums';
 
 @Injectable()
 export class OffersService {
+    constructor(private readonly prisma: PrismaService) { }
 
-    private offers: Offers[] = [];
-    private nextId = 1;
-    create(dto: CreateOffersDto): Offers {
-        const newOffers: Offers = {
-            id_oferta: this.nextId++,
-            titulo: dto.titulo,
-            descripcion: dto.descripcion,
-            requisitos: dto.requisitos,
-            tipo_contrato: dto.tipo_contrato,
-            ubicacion: dto.ubicacion,
-            salario: dto.salario,
-            fecha_publicacion: dto.fecha_publicacion,
-            fecha_cierre: dto.fecha_cierre,
-            estado: dto.estado,
-            id_organizacion: dto.id_organizacion,
-            //createdAt: new Date().toISOString(),
-        };
-        this.offers.push(newOffers);
-        return newOffers;
+    async create(dto: CreateOffersDto): Promise<Offers> {
+        return this.prisma.ofertaLaboral.create({
+            data: {
+                titulo: dto.titulo,
+                descripcion: dto.descripcion,
+                requisitos: dto.requisitos,
+                tipo_contrato: dto.tipo_contrato,
+                ubicacion: dto.ubicacion,
+                salario: dto.salario,
+                fecha_publicacion: dto.fecha_publicacion,
+                fecha_cierre: dto.fecha_cierre,
+                estado: dto.estado || EntityStatus.ACTIVE,
+                id_organizacion: dto.id_organizacion,
+            },
+        });
     }
-    findAll(): Offers[] {
-        return this.offers;
+
+    async findAll(): Promise<Offers[]> {
+        return this.prisma.ofertaLaboral.findMany();
     }
-    findOne(id: number): Offers {
-        const found = this.offers.find(c => c.id_oferta === id);
-        if (!found) throw new NotFoundException(`Offers ${id} no existe`);
-        return found;
+
+    async findOne(id: number): Promise<Offers> {
+        const offer = await this.prisma.ofertaLaboral.findUnique({
+            where: { id_oferta: id },
+        });
+
+        if (!offer) {
+            throw new NotFoundException(`Offer ${id} no existe`);
+        }
+
+        return offer;
     }
-    update(id: number, dto: UpdateOffersDto): Offers {
-        const offers = this.findOne(id);
-        Object.assign(offers, dto);
-        return offers;
+
+    async update(id: number, dto: UpdateOffersDto): Promise<Offers> {
+        await this.findOne(id);
+
+        return this.prisma.ofertaLaboral.update({
+            where: { id_oferta: id },
+            data: {
+                ...dto,
+            },
+        });
     }
-    remove(id: number): void {
-        const idx = this.offers.findIndex(c => c.id_oferta === id);
-        if (idx === -1) throw new NotFoundException(`offers ${id} no existe`);
-        this.offers.splice(idx, 1);
+
+    async remove(id: number): Promise<void> {
+        await this.findOne(id);
+        await this.prisma.ofertaLaboral.delete({
+            where: { id_oferta: id },
+        });
     }
 }

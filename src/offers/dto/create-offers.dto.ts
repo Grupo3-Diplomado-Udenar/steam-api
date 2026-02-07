@@ -1,15 +1,9 @@
-import { Decimal } from '@prisma/client/runtime/library';
-import { IsNotEmpty, IsString, IsNumber, IsDate, IsDecimal, IsOptional, IsEnum } from 'class-validator';
+import { IsNotEmpty, IsString, IsNumber, IsDate, IsOptional, IsEnum } from 'class-validator';
 import { Type } from 'class-transformer';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { EntityStatus } from '../../common/enums';
 
 export class CreateOffersDto {
-    @ApiProperty({ example: 1, description: 'Unique identifier for the offer' })
-    @IsNumber()
-    @IsNotEmpty()
-    id_oferta: number;
-
     @ApiProperty({ example: 'Desarrollador Fullstack', description: 'Title of the job offer' })
     @IsString()
     @IsNotEmpty()
@@ -35,10 +29,10 @@ export class CreateOffersDto {
     @IsOptional()
     ubicacion: string;
 
-    @ApiPropertyOptional({ example: '5000000', description: 'Salary for the position' })
-    @IsDecimal()
+    @ApiPropertyOptional({ example: 5000000, description: 'Salary for the position' })
+    @IsNumber()
     @IsOptional()
-    salario: Decimal;
+    salario?: number;
 
     @ApiProperty({ example: '2023-10-01T10:00:00.000Z', description: 'Publication date' })
     @IsDate()
