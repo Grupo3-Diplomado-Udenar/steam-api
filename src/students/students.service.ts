@@ -43,9 +43,17 @@ export class StudentsService {
   async update(numero_identificacion: string, dto: UpdateStudentDto) {
     // Verificar si existe antes de actualizar
     await this.findOne(numero_identificacion);
+    
+    // Limpiar campos vacíos: convertir strings vacíos a null
+    const cleanedData = {
+      ...dto,
+      celular: dto.celular === '' ? null : dto.celular,
+      ciudad: dto.ciudad === '' ? null : dto.ciudad,
+    };
+    
     return await this.prisma.estudiante.update({
       where: { numero_identificacion },
-      data: dto,
+      data: cleanedData,
     });
   }
 
