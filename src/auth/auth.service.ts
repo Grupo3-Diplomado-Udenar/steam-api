@@ -60,7 +60,7 @@ export class AuthService {
   }
 
   async registerOrganization(registerOrganizationDto: RegisterOrganizationDto) {
-    const { email, password, ...organizationData } = registerOrganizationDto;
+    const { email, password, nombre, ...organizationData } = registerOrganizationDto;
 
     // Verificar si el email ya existe
     const existingOrganization = await this.prisma.organizacion.findUnique({
@@ -78,6 +78,7 @@ export class AuthService {
     const organization = await this.prisma.organizacion.create({
       data: {
         ...organizationData,
+        nombre: nombre.toUpperCase(),
         email,
         password: hashedPassword,
         estado: EntityStatus.ACTIVE,

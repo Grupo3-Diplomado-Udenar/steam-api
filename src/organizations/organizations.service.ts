@@ -15,7 +15,7 @@ export class OrganizationsService {
     return this.prisma.organizacion.create({
       data: {
         nit: dto.nit,
-        nombre: dto.nombre,
+        nombre: dto.nombre.toUpperCase(),
         email: dto.email,
         password: hashedPassword,
         sector: dto.sector,
