@@ -3,6 +3,7 @@ import { StudentsService } from './students.service';
 import { CreateStudentDto } from './dto/create-student.dto';
 import { UpdateStudentDto } from './dto/update-student.dto';
 import { AssignCareerDto } from './dto/assign-career.dto';
+import { UpdateStudentCareerDto } from './dto/update-student-career.dto';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 
 
@@ -67,4 +68,30 @@ export class StudentsController {
     getStudentCareers(@Param('id') id: string) {
         return this.studentsService.getStudentCareers(id);
     }
+
+    @ApiOperation({ summary: 'Update career for a student' })
+    @ApiResponse({ status: 200, description: 'Student career successfully updated.' })
+    @ApiResponse({ status: 404, description: 'Student career not found.' })
+    @Patch(':id/careers/:careerId')
+    updateStudentCareer(
+        @Param('id') id: string,
+        @Param('careerId') careerId: string,
+        @Body() dto: UpdateStudentCareerDto,
+    ) {
+        return this.studentsService.updateStudentCareer(id, Number(careerId), dto);
+    }
+
+    @ApiOperation({ summary: 'Remove career from a student' })
+    @ApiResponse({ status: 204, description: 'Student career successfully removed.' })
+    @ApiResponse({ status: 404, description: 'Student career not found.' })
+    @Delete(':id/careers/:careerId')
+    @HttpCode(204)
+    removeStudentCareer(
+        @Param('id') id: string,
+        @Param('careerId') careerId: string,
+    ) {
+        return this.studentsService.removeStudentCareer(id, Number(careerId));
+    }
+
+    
 }
