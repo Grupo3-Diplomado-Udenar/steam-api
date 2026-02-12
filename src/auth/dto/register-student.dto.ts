@@ -1,5 +1,6 @@
-import { IsEmail, IsNotEmpty, IsNumberString, IsOptional, IsString, MinLength } from 'class-validator';
+import { IsEmail, IsEnum, IsNotEmpty, IsNumberString, IsOptional, IsString, MinLength } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { IdentificationType } from '../../common/enums';
 
 export class RegisterStudentDto {
   @ApiProperty({ example: '1234567890', description: 'Identification number' })
@@ -7,10 +8,10 @@ export class RegisterStudentDto {
   @IsNumberString()
   numero_identificacion: string;
 
-  @ApiProperty({ example: 'CC', description: 'Type of identification (CC, TI, etc.)' })
+  @ApiProperty({ enum: IdentificationType, example: IdentificationType.CC, description: 'Type of identification' })
   @IsNotEmpty()
-  @IsString()
-  tipo_identificacion: string;
+  @IsEnum(IdentificationType)
+  tipo_identificacion: IdentificationType;
 
   @ApiProperty({ example: 'Juan', description: 'First name' })
   @IsNotEmpty()

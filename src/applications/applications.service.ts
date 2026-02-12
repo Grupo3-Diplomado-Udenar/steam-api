@@ -54,6 +54,33 @@ export class ApplicationsService {
         return postulacion;
     }
 
+    async findByOffer(offerId: number) {
+        // Verificar si la oferta existe
+        const oferta = await this.prisma.ofertaLaboral.findUnique({
+            where: { id_oferta: offerId },
+        });
+        if (!oferta) {
+            throw new NotFoundException(`Oferta Laboral ${offerId} no existe`);
+        }
+
+        return await this.prisma.postulacion.findMany({
+            where: { id_oferta: offerId },
+            include: {
+                estudiante: {
+                    select: {
+                        numero_identificacion: true,
+                        nombres: true,
+                        apellidos: true,
+                        email: true,
+                        celular: true,
+                        ciudad: true,
+                        fecha_registro: true,
+                    },
+                },
+            },
+        });
+    }
+
     async remove(id: number) {
         await this.findOne(id);
         return await this.prisma.postulacion.delete({

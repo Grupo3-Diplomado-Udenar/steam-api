@@ -30,6 +30,14 @@ export class ApplicationsController {
         return this.applicationsService.findOne(id);
     }
 
+    @ApiOperation({ summary: 'Get all applications for a specific job offer' })
+    @ApiResponse({ status: 200, description: 'List of applications for the offer.' })
+    @ApiResponse({ status: 404, description: 'Offer not found.' })
+    @Get('offer/:offerId')
+    findByOffer(@Param('offerId', ParseIntPipe) offerId: number) {
+        return this.applicationsService.findByOffer(offerId);
+    }
+
     @ApiOperation({ summary: 'Delete application' })
     @ApiResponse({ status: 200, description: 'Application successfully deleted.' })
     @Delete(':id')

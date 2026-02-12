@@ -3,6 +3,7 @@ import { CreateStudentDto } from './dto/create-student.dto';
 import { UpdateStudentDto } from './dto/update-student.dto';
 import { PrismaService } from '../prisma/prisma.service';
 import { AssignCareerDto } from './dto/assign-career.dto';
+import { UpdateStudentCareerDto } from './dto/update-student-career.dto';
 import * as bcrypt from 'bcrypt';
 
 @Injectable()
@@ -43,9 +44,17 @@ export class StudentsService {
   async update(numero_identificacion: string, dto: UpdateStudentDto) {
     // Verificar si existe antes de actualizar
     await this.findOne(numero_identificacion);
+    
+    // Limpiar campos vacíos: convertir strings vacíos a null
+    const cleanedData = {
+      ...dto,
+      celular: dto.celular === '' ? null : dto.celular,
+      ciudad: dto.ciudad === '' ? null : dto.ciudad,
+    };
+    
     return await this.prisma.estudiante.update({
       where: { numero_identificacion },
-      data: dto,
+      data: cleanedData,
     });
   }
 
@@ -62,6 +71,73 @@ export class StudentsService {
       data: {
         numero_identificacion: studentId,
         ...dto,
+      },
+    });
+  }
+
+  async getStudentCareers(studentId: string) {
+    await this.findOne(studentId);
+    return this.prisma.estudianteCarrera.findMany({
+      where: { numero_identificacion: studentId },
+      include: {
+        carrera: {
+          include: {
+            universidad: true,
+          },
+        },
+      },
+    });
+  }
+
+  async updateStudentCareer(studentId: string, careerId: number, dto: UpdateStudentCareerDto) {
+    await this.findOne(studentId);
+
+    const studentCareer = await this.prisma.estudianteCarrera.findUnique({
+      where: {
+        numero_identificacion_id_carrera: {
+          numero_identificacion: studentId,
+          id_carrera: careerId,
+        },
+      },
+    });
+
+    if (!studentCareer) {
+      throw new NotFoundException(`Relacion estudiante-carrera no existe`);
+    }
+
+    return this.prisma.estudianteCarrera.update({
+      where: {
+        numero_identificacion_id_carrera: {
+          numero_identificacion: studentId,
+          id_carrera: careerId,
+        },
+      },
+      data: dto,
+    });
+  }
+
+  async removeStudentCareer(studentId: string, careerId: number) {
+    await this.findOne(studentId);
+
+    const studentCareer = await this.prisma.estudianteCarrera.findUnique({
+      where: {
+        numero_identificacion_id_carrera: {
+          numero_identificacion: studentId,
+          id_carrera: careerId,
+        },
+      },
+    });
+
+    if (!studentCareer) {
+      throw new NotFoundException(`Relacion estudiante-carrera no existe`);
+    }
+
+    return this.prisma.estudianteCarrera.delete({
+      where: {
+        numero_identificacion_id_carrera: {
+          numero_identificacion: studentId,
+          id_carrera: careerId,
+        },
       },
     });
   }

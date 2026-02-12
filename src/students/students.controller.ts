@@ -2,6 +2,8 @@ import { Body, Controller, Post, Get, Param, Patch, Delete, HttpCode } from '@ne
 import { StudentsService } from './students.service';
 import { CreateStudentDto } from './dto/create-student.dto';
 import { UpdateStudentDto } from './dto/update-student.dto';
+import { AssignCareerDto } from './dto/assign-career.dto';
+import { UpdateStudentCareerDto } from './dto/update-student-career.dto';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 
 
@@ -50,6 +52,46 @@ export class StudentsController {
         this.studentsService.remove(id);
     }
 
+    @ApiOperation({ summary: 'Assign career to student' })
+    @ApiResponse({ status: 201, description: 'Career successfully assigned to student.' })
+    @Post(':id/careers')
+    assignCareer(
+        @Param('id') id: string,
+        @Body() dto: AssignCareerDto
+    ) {
+        return this.studentsService.assignCareer(id, dto);
+    }
 
+    @ApiOperation({ summary: 'Get all careers of a student' })
+    @ApiResponse({ status: 200, description: 'List of student careers.' })
+    @Get(':id/careers')
+    getStudentCareers(@Param('id') id: string) {
+        return this.studentsService.getStudentCareers(id);
+    }
 
+    @ApiOperation({ summary: 'Update career for a student' })
+    @ApiResponse({ status: 200, description: 'Student career successfully updated.' })
+    @ApiResponse({ status: 404, description: 'Student career not found.' })
+    @Patch(':id/careers/:careerId')
+    updateStudentCareer(
+        @Param('id') id: string,
+        @Param('careerId') careerId: string,
+        @Body() dto: UpdateStudentCareerDto,
+    ) {
+        return this.studentsService.updateStudentCareer(id, Number(careerId), dto);
+    }
+
+    @ApiOperation({ summary: 'Remove career from a student' })
+    @ApiResponse({ status: 204, description: 'Student career successfully removed.' })
+    @ApiResponse({ status: 404, description: 'Student career not found.' })
+    @Delete(':id/careers/:careerId')
+    @HttpCode(204)
+    removeStudentCareer(
+        @Param('id') id: string,
+        @Param('careerId') careerId: string,
+    ) {
+        return this.studentsService.removeStudentCareer(id, Number(careerId));
+    }
+
+    
 }
