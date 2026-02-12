@@ -44,6 +44,16 @@ $ npm run start:dev
 $ npm run start:prod
 ```
 
+## 🚀 Swagger Documentation
+
+Puedes probar y explorar los endpoints de la API utilizando **Swagger UI**. 
+
+Una vez que la aplicación esté corriendo, accede a:
+👉 **[http://localhost:3000/api](http://localhost:3000/api)**
+
+---
+
+
 ## Run tests
 
 ```bash
