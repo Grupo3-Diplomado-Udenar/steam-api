@@ -1,6 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateApplicationDto } from './dto/create-application.dto';
+import { ApplicationStatus } from '../common/enums';
 
 @Injectable()
 export class ApplicationsService {
@@ -27,7 +28,7 @@ export class ApplicationsService {
             data: {
                 id_num: dto.id_num,
                 id_oferta: dto.id_oferta,
-                estado: dto.estado,
+                estado: dto.estado ?? ApplicationStatus.PENDING,
                 fecha_postulacion: new Date(),
             },
         });
