@@ -22,6 +22,14 @@ export class ApplicationsController {
         return this.applicationsService.findAll();
     }
 
+    @ApiOperation({ summary: 'Get all applications for a specific student' })
+    @ApiResponse({ status: 200, description: 'List of applications for the student.' })
+    @ApiResponse({ status: 404, description: 'Student not found.' })
+    @Get('student/:studentId')
+    findByStudent(@Param('studentId') studentId: string) {
+        return this.applicationsService.findByStudent(studentId);
+    }
+
     @ApiOperation({ summary: 'Get application by ID' })
     @ApiResponse({ status: 200, description: 'Return application details.' })
     @ApiResponse({ status: 404, description: 'Application not found.' })

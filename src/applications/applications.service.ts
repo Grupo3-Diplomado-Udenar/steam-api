@@ -82,6 +82,22 @@ export class ApplicationsService {
         });
     }
 
+    async findByStudent(studentId: string) {
+        const estudiante = await this.prisma.estudiante.findUnique({
+            where: { numero_identificacion: studentId },
+        });
+        if (!estudiante) {
+            throw new NotFoundException(`Estudiante ${studentId} no existe`);
+        }
+
+        return await this.prisma.postulacion.findMany({
+            where: { id_num: studentId },
+            include: {
+                oferta: true,
+            },
+        });
+    }
+
     async remove(id: number) {
         await this.findOne(id);
         return await this.prisma.postulacion.delete({
