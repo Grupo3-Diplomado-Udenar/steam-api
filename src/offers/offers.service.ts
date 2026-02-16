@@ -27,7 +27,10 @@ export class OffersService {
     }
 
     async findAll(): Promise<Offers[]> {
-        return this.prisma.ofertaLaboral.findMany();
+        return this.prisma.ofertaLaboral.findMany({
+            where: { estado: EntityStatus.ACTIVE },
+            orderBy: { fecha_publicacion: 'desc' },
+        });
     }
 
     async findByOrganization(organizationId: string): Promise<Offers[]> {
