@@ -17,7 +17,7 @@ export class OffersController {
         return this.offersService.create(dto);
     }
 
-    @ApiOperation({ summary: 'Get all job offers' })
+    @ApiOperation({ summary: 'Get all joposb offers' })
     @ApiResponse({ status: 200, description: 'Return all offers.', type: [Offers] })
     @Get()
     findAll() {

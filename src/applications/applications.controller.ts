@@ -1,6 +1,7 @@
-import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post } from '@nestjs/common';
 import { ApplicationsService } from './applications.service';
 import { CreateApplicationDto } from './dto/create-application.dto';
+import { UpdateApplicationDto } from './dto/update-application.dto';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 
 @ApiTags('Applications')
@@ -22,6 +23,14 @@ export class ApplicationsController {
         return this.applicationsService.findAll();
     }
 
+    @ApiOperation({ summary: 'Get all applications for a specific student' })
+    @ApiResponse({ status: 200, description: 'List of applications for the student.' })
+    @ApiResponse({ status: 404, description: 'Student not found.' })
+    @Get('student/:studentId')
+    findByStudent(@Param('studentId') studentId: string) {
+        return this.applicationsService.findByStudent(studentId);
+    }
+
     @ApiOperation({ summary: 'Get application by ID' })
     @ApiResponse({ status: 200, description: 'Return application details.' })
     @ApiResponse({ status: 404, description: 'Application not found.' })
@@ -40,9 +49,18 @@ export class ApplicationsController {
 
     @ApiOperation({ summary: 'Get all applications for a specific organization' })
     @ApiResponse({ status: 200, description: 'List of applications for the organization.' })
+    @ApiResponse({ status: 404, description: 'Organization not found.' })
     @Get('organization/:organizationId')
     findByOrganization(@Param('organizationId') organizationId: string) {
         return this.applicationsService.findByOrganization(organizationId);
+    }
+
+    @ApiOperation({ summary: 'Update application status' })
+    @ApiResponse({ status: 200, description: 'Application status successfully updated.' })
+    @ApiResponse({ status: 404, description: 'Application not found.' })
+    @Patch(':id')
+    update(@Param('id', ParseIntPipe) id: number, @Body() dto: UpdateApplicationDto) {
+        return this.applicationsService.update(id, dto.estado);
     }
 
     @ApiOperation({ summary: 'Delete application' })

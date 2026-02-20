@@ -33,6 +33,14 @@ export class OrganizationsController {
     return this.organizationsService.findAll();
   }
 
+  //Empresas destacadas (por mayor número de postulaciones)
+  @ApiOperation({ summary: 'Get featured organizations by most applications' })
+  @ApiResponse({ status: 200, description: 'List of featured organizations sorted by applications count.' })
+  @Get('featured')
+  findFeatured() {
+    return this.organizationsService.findFeatured();
+  }
+
   //Obtener una por ID
   @ApiOperation({ summary: 'Get organization by ID' })
   @ApiResponse({ status: 200, description: 'Return organization details.' })
