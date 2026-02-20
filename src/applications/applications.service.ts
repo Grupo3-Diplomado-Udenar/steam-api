@@ -81,6 +81,35 @@ export class ApplicationsService {
         });
     }
 
+    async findByOrganization(organizationId: string) {
+        return await this.prisma.postulacion.findMany({
+            where: {
+                oferta: {
+                    id_organizacion: organizationId,
+                },
+            },
+            include: {
+                estudiante: {
+                    select: {
+                        numero_identificacion: true,
+                        nombres: true,
+                        apellidos: true,
+                        email: true,
+                        celular: true,
+                        ciudad: true,
+                        fecha_registro: true,
+                    },
+                },
+                oferta: {
+                    select: {
+                        id_oferta: true,
+                        titulo: true,
+                    },
+                },
+            },
+        });
+    }
+
     async remove(id: number) {
         await this.findOne(id);
         return await this.prisma.postulacion.delete({

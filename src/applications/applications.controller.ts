@@ -38,6 +38,13 @@ export class ApplicationsController {
         return this.applicationsService.findByOffer(offerId);
     }
 
+    @ApiOperation({ summary: 'Get all applications for a specific organization' })
+    @ApiResponse({ status: 200, description: 'List of applications for the organization.' })
+    @Get('organization/:organizationId')
+    findByOrganization(@Param('organizationId') organizationId: string) {
+        return this.applicationsService.findByOrganization(organizationId);
+    }
+
     @ApiOperation({ summary: 'Delete application' })
     @ApiResponse({ status: 200, description: 'Application successfully deleted.' })
     @Delete(':id')
