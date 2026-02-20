@@ -50,4 +50,44 @@ export class OrganizationsService {
       data: { estado: EntityStatus.INACTIVE },
     });
   }
+
+  async findFeatured(limit: number = 6) {
+    const organizations = await this.prisma.organizacion.findMany({
+      where: { estado: EntityStatus.ACTIVE },
+      select: {
+        id_organizacion: true,
+        nombre: true,
+        sector: true,
+        logo_url: true,
+        ubicacion: true,
+        descripcion: true,
+        ofertas: {
+          select: {
+            id_oferta: true,
+            estado: true,
+            _count: {
+              select: { postulaciones: true },
+            },
+          },
+        },
+      },
+    });
+
+    return organizations
+      .map((org) => {
+        const total_postulaciones = org.ofertas.reduce(
+          (sum, oferta) => sum + oferta._count.postulaciones,
+          0,
+        );
+        const vacantes_activas = org.ofertas.length;
+        const { ofertas, ...orgData } = org;
+        return {
+          ...orgData,
+          total_postulaciones,
+          vacantes_activas,
+        };
+      })
+      .sort((a, b) => b.total_postulaciones - a.total_postulaciones)
+      .slice(0, limit);
+  }
 }
