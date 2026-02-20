@@ -98,6 +98,64 @@ export class ApplicationsService {
         });
     }
 
+    async findByOrganization(organizationId: string) {
+        // Verificar si la organización existe
+        const organizacion = await this.prisma.organizacion.findUnique({
+            where: { id_organizacion: organizationId },
+        });
+        if (!organizacion) {
+            throw new NotFoundException(`Organización ${organizationId} no existe`);
+        }
+
+        return await this.prisma.postulacion.findMany({
+            where: {
+                oferta: {
+                    id_organizacion: organizationId,
+                },
+            },
+            include: {
+                estudiante: {
+                    select: {
+                        numero_identificacion: true,
+                        nombres: true,
+                        apellidos: true,
+                        email: true,
+                        celular: true,
+                        ciudad: true,
+                        fecha_registro: true,
+                    },
+                },
+                oferta: {
+                    select: {
+                        id_oferta: true,
+                        titulo: true,
+                        descripcion: true,
+                        tipo_contrato: true,
+                        ubicacion: true,
+                        salario: true,
+                        fecha_publicacion: true,
+                        fecha_cierre: true,
+                        estado: true,
+                    },
+                },
+            },
+        });
+    }
+
+    async update(id: number, estado: ApplicationStatus) {
+        // Verificar que la postulación existe
+        await this.findOne(id);
+
+        return await this.prisma.postulacion.update({
+            where: { id_postulacion: id },
+            data: { estado },
+            include: {
+                estudiante: true,
+                oferta: true,
+            },
+        });
+    }
+
     async remove(id: number) {
         await this.findOne(id);
         return await this.prisma.postulacion.delete({
