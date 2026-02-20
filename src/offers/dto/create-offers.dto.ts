@@ -37,7 +37,7 @@ export class CreateOffersDto {
     @ApiProperty({ example: '2023-10-01T10:00:00.000Z', description: 'Publication date' })
     @IsDate()
     @Type(() => Date)
-    @IsNotEmpty()
+    @IsOptional()
     fecha_publicacion: Date;
 
     @ApiPropertyOptional({ example: '2023-12-31T23:59:59.000Z', description: 'Closing date for applications' })
