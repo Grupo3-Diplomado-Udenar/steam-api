@@ -1,6 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateApplicationDto } from './dto/create-application.dto';
+import { ApplicationStatus } from '../common/enums';
 
 @Injectable()
 export class ApplicationsService {
@@ -27,7 +28,7 @@ export class ApplicationsService {
             data: {
                 id_num: dto.id_num,
                 id_oferta: dto.id_oferta,
-                estado: dto.estado,
+                estado: dto.estado ?? ApplicationStatus.PENDING,
                 fecha_postulacion: new Date(),
             },
         });
@@ -77,6 +78,80 @@ export class ApplicationsService {
                         fecha_registro: true,
                     },
                 },
+            },
+        });
+    }
+
+    async findByStudent(studentId: string) {
+        const estudiante = await this.prisma.estudiante.findUnique({
+            where: { numero_identificacion: studentId },
+        });
+        if (!estudiante) {
+            throw new NotFoundException(`Estudiante ${studentId} no existe`);
+        }
+
+        return await this.prisma.postulacion.findMany({
+            where: { id_num: studentId },
+            include: {
+                oferta: true,
+            },
+        });
+    }
+
+    async findByOrganization(organizationId: string) {
+        // Verificar si la organización existe
+        const organizacion = await this.prisma.organizacion.findUnique({
+            where: { id_organizacion: organizationId },
+        });
+        if (!organizacion) {
+            throw new NotFoundException(`Organización ${organizationId} no existe`);
+        }
+
+        return await this.prisma.postulacion.findMany({
+            where: {
+                oferta: {
+                    id_organizacion: organizationId,
+                },
+            },
+            include: {
+                estudiante: {
+                    select: {
+                        numero_identificacion: true,
+                        nombres: true,
+                        apellidos: true,
+                        email: true,
+                        celular: true,
+                        ciudad: true,
+                        fecha_registro: true,
+                    },
+                },
+                oferta: {
+                    select: {
+                        id_oferta: true,
+                        titulo: true,
+                        descripcion: true,
+                        tipo_contrato: true,
+                        ubicacion: true,
+                        salario: true,
+                        fecha_publicacion: true,
+                        fecha_cierre: true,
+                        estado: true,
+                    },
+                },
+            },
+        });
+    }
+
+    async update(id: number, estado: ApplicationStatus) {
+        // Verificar que la postulación existe
+        await this.findOne(id);
+
+        return await this.prisma.postulacion.update({
+            where: { id_postulacion: id },
+            data: { estado },
+            include: {
+                estudiante: true,
+                oferta: true,
             },
         });
     }
